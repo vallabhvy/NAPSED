@@ -1,0 +1,48 @@
+{
+  "schemaVersion": "1.1.0",
+  "specType": "PRACTICE",
+  "specId": "prac-041-token-bucket-js",
+  "slug": "token-bucket-js",
+  "title": "Lost Updates in an Async Token Bucket",
+  "track": "CONCURRENCY",
+  "difficulty": "BEGINNER",
+  "estimatedTimeToSolveMinutes": 20,
+  "executionTier": "wasm",
+  "brief": {
+    "overview": "This limiter looks correct until many callers await refill at the same time. Each caller snapshots tokens, yields, then writes back — inventing or losing tokens. Serialize the critical section so Allow() is safe under concurrent async callers.",
+    "requirements": [
+      "Allow() must not lose or invent tokens when many callers run concurrently via Promise.all.",
+      "An empty bucket must deny and must not go negative.",
+      "Do not busy-spin. A mutex implemented as a promise chain is enough."
+    ],
+    "hintsOrConstraints": [
+      "JavaScript is single-threaded, but await still interleaves. Treat the gap between read and write as a race.",
+      "Visible tests call Allow() concurrently. If they fail, you still have a lost-update."
+    ]
+  },
+  "workspace": {
+    "runtime": "browser-js",
+    "testCommand": "node limiter.test.js",
+    "entrypoint": "limiter.test.js",
+    "files": []
+  },
+  "verification": {
+    "command": "node limiter.test.js",
+    "timeoutSeconds": 5,
+    "maxMemoryMB": 64,
+    "raceDetector": false,
+    "hiddenHarnessPath": "verification/verify.js"
+  },
+  "defenseGate": {
+    "question": "What did you do, and why did you do that?",
+    "placeholder": "Explain the lost-update window and how you serialized refill + deduct.",
+    "minCharacters": 80,
+    "keywords": ["mutex", "await", "lost update", "critical section"],
+    "rejectBoilerplate": true
+  },
+  "package": {
+    "starterDir": "starter",
+    "solutionDir": "solution",
+    "verificationDir": "verification"
+  }
+}

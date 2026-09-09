@@ -1,0 +1,179 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-11T15:20:00.000Z",
+  "title": "Design System: Napsed",
+  "extensions": {
+    "colorMeta": {
+      "charcoal-950": {
+        "role": "neutral",
+        "displayName": "Charcoal 950",
+        "canonical": "#0D0E10",
+        "tonalRamp": ["#0D0E10", "#141619", "#22252A", "#3A3D42", "#5C5854", "#8A8580", "#E6E2DD", "#F5F3EF"]
+      },
+      "charcoal-900": {
+        "role": "neutral",
+        "displayName": "Charcoal 900",
+        "canonical": "#141619",
+        "tonalRamp": ["#0D0E10", "#141619", "#1A1D21", "#22252A", "#3A3D42", "#8A8580", "#E6E2DD", "#F5F3EF"]
+      },
+      "greige-800": {
+        "role": "neutral",
+        "displayName": "Greige 800",
+        "canonical": "#22252A",
+        "tonalRamp": ["#0D0E10", "#141619", "#22252A", "#3A3D42", "#5C5854", "#8A8580", "#C4BFB8", "#E6E2DD"]
+      },
+      "beige-200": {
+        "role": "neutral",
+        "displayName": "Beige 200",
+        "canonical": "#E6E2DD",
+        "tonalRamp": ["#22252A", "#5C5854", "#8A8580", "#A8A39C", "#C4BFB8", "#E6E2DD", "#F0EDE8", "#F5F3EF"]
+      },
+      "cream-100": {
+        "role": "neutral",
+        "displayName": "Cream 100",
+        "canonical": "#F5F3EF",
+        "tonalRamp": ["#22252A", "#5C5854", "#8A8580", "#C4BFB8", "#E6E2DD", "#F0EDE8", "#F5F3EF", "#FFFFFF"]
+      },
+      "amber-500": {
+        "role": "primary",
+        "displayName": "Amber Signal",
+        "canonical": "#F59E0B",
+        "tonalRamp": ["#78350F", "#92400E", "#B45309", "#D97706", "#F59E0B", "#FBBF24", "#FCD34D", "#FEF3C7"]
+      },
+      "amber-glow": {
+        "role": "primary",
+        "displayName": "Amber Glow",
+        "canonical": "rgba(245, 158, 11, 0.1)",
+        "tonalRamp": ["rgba(245,158,11,0.35)", "rgba(245,158,11,0.25)", "rgba(245,158,11,0.18)", "rgba(245,158,11,0.12)", "rgba(245,158,11,0.1)", "rgba(245,158,11,0.06)", "rgba(245,158,11,0.03)", "rgba(245,158,11,0.01)"]
+      },
+      "mute-greige": {
+        "role": "neutral",
+        "displayName": "Mute Greige",
+        "canonical": "#8A8580",
+        "tonalRamp": ["#22252A", "#3A3D42", "#5C5854", "#8A8580", "#A8A39C", "#C4BFB8", "#E6E2DD", "#F5F3EF"]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Proof Card identity and hero titles." },
+      "headline": { "displayName": "Headline", "purpose": "Section titles." },
+      "title": { "displayName": "Title", "purpose": "Card headers." },
+      "body": { "displayName": "Body", "purpose": "Profile and spec prose." },
+      "label": { "displayName": "Label", "purpose": "Meta and CTAs." },
+      "mono": { "displayName": "Mono", "purpose": "Telemetry, URLs, code." }
+    },
+    "shadows": [
+      {
+        "name": "floating-card",
+        "value": "0 18px 40px -14px rgba(0,0,0,0.75), inset 0 1px 0 rgba(255,255,255,0.06)",
+        "purpose": "Primary Proof Card and interactive panel lift."
+      },
+      {
+        "name": "amber-glow",
+        "value": "0 0 24px -2px rgba(245,158,11,0.35)",
+        "purpose": "Hover/active verification signal."
+      },
+      {
+        "name": "seal-press",
+        "value": "0 4px 12px rgba(0,0,0,0.45), inset 0 0 8px rgba(13,14,16,0.2)",
+        "purpose": "Consensus seal materiality."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-out-expo",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Card hover and page entrance."
+      },
+      {
+        "name": "duration-standard",
+        "value": "250ms",
+        "purpose": "Border and glow transitions."
+      }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Cashmere beige CTA for standard actions.",
+      "html": "<button class=\"ds-btn-primary\" type=\"button\">SYNC</button>",
+      "css": ".ds-btn-primary { background: #E6E2DD; color: #0D0E10; padding: 10px 16px; border: none; border-radius: 12px; font-family: Inter, system-ui, sans-serif; font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; cursor: pointer; transition: background 250ms cubic-bezier(0.16,1,0.3,1); } .ds-btn-primary:hover { background: #F5F3EF; } .ds-btn-primary:focus-visible { outline: none; box-shadow: 0 0 0 2px #0D0E10, 0 0 0 4px rgba(245,158,11,0.55); }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Charcoal surface with greige border.",
+      "html": "<button class=\"ds-btn-secondary\" type=\"button\">COPY LINK</button>",
+      "css": ".ds-btn-secondary { background: #141619; color: #E6E2DD; padding: 10px 16px; border: 1px solid #22252A; border-radius: 12px; font-family: Inter, system-ui, sans-serif; font-size: 0.6875rem; font-weight: 600; cursor: pointer; transition: border-color 250ms cubic-bezier(0.16,1,0.3,1); } .ds-btn-secondary:hover { border-color: rgba(245,158,11,0.4); } .ds-btn-secondary:focus-visible { outline: none; box-shadow: 0 0 0 2px #0D0E10, 0 0 0 4px rgba(245,158,11,0.55); }"
+    },
+    {
+      "name": "Text Field",
+      "kind": "input",
+      "refersTo": "input-default",
+      "description": "Deep field with amber focus.",
+      "html": "<input class=\"ds-input\" type=\"text\" placeholder=\"GitHub handle\" />",
+      "css": ".ds-input { height: 36px; width: 100%; box-sizing: border-box; background: #0D0E10; color: #E6E2DD; border: 1px solid #22252A; border-radius: 8px; padding: 8px 12px; font-size: 0.75rem; font-family: Inter, system-ui, sans-serif; } .ds-input::placeholder { color: #8A8580; } .ds-input:focus { outline: none; border-color: rgba(245,158,11,0.6); box-shadow: 0 0 0 1px rgba(245,158,11,0.3); }"
+    },
+    {
+      "name": "Nav Item Active",
+      "kind": "nav",
+      "refersTo": "nav-item-active",
+      "description": "Active pillar with amber whisper border.",
+      "html": "<button class=\"ds-nav-active\">Arena</button>",
+      "css": ".ds-nav-active { background: #141619; color: #F5F3EF; border: 1px solid rgba(245,158,11,0.4); border-radius: 12px; padding: 8px 14px; font-family: Inter, system-ui, sans-serif; font-size: 0.75rem; font-weight: 500; box-shadow: 0 0 24px -2px rgba(245,158,11,0.35); }"
+    },
+    {
+      "name": "Floating Card",
+      "kind": "card",
+      "refersTo": "card-surface",
+      "description": "Lifted charcoal Proof Card surface.",
+      "html": "<article class=\"ds-card\"><h3 class=\"ds-card-title\">Proof Card</h3><p class=\"ds-card-body\">Peer-audited credentials for hiring leads.</p></article>",
+      "css": ".ds-card { background: #141619; color: #E6E2DD; border: 1px solid #22252A; border-radius: 16px; padding: 24px; box-shadow: 0 18px 40px -14px rgba(0,0,0,0.75), inset 0 1px 0 rgba(255,255,255,0.06); font-family: Inter, system-ui, sans-serif; } .ds-card-title { margin: 0 0 8px; font-size: 1.0625rem; font-weight: 600; color: #F5F3EF; } .ds-card-body { margin: 0; font-size: 0.875rem; color: #8A8580; line-height: 1.55; }"
+    },
+    {
+      "name": "Consensus Seal",
+      "kind": "custom",
+      "refersTo": "consensus-seal",
+      "description": "Amber cryptographic seal — sole chromatic privilege.",
+      "html": "<div class=\"ds-seal\"><span class=\"ds-seal-mark\">PROOF</span><span class=\"ds-seal-meta\">GUILD 2/2</span></div>",
+      "css": ".ds-seal { display: inline-flex; flex-direction: column; align-items: center; gap: 4px; min-width: 7.25rem; padding: 14px 16px; background: radial-gradient(circle at 30% 25%, #FBBF24 0%, #F59E0B 55%, #D97706 100%); color: #0D0E10; border: 2px dashed #22252A; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.45), 0 0 24px -2px rgba(245,158,11,0.35), inset 0 0 8px rgba(13,14,16,0.2); font-family: JetBrains Mono, ui-monospace, Menlo, monospace; text-transform: uppercase; transform: rotate(-7deg); } .ds-seal-mark { font-size: 0.875rem; font-weight: 800; letter-spacing: 0.12em; } .ds-seal-meta { font-size: 0.5625rem; font-weight: 600; letter-spacing: 0.08em; opacity: 0.85; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Cashmere and Concrete",
+    "overview": "Napsed lives in a high-density dark workshop — the private club room where engineers defend systems for hours. Soft cashmere neutrals (beige, cream) sit on deep concrete charcoal; amber is reserved for cryptographic consensus: seals, focus rings, and rare signal moments. The feel is tactile and mature — Linear/Raycast density with the warmth of stamped credentials, not neon cyberpunk or sterile light-mode blueprints.\n\nSwiss Editorial light-mode (gallery white, vermillion stamps, zero radius) is anti-reference. Do not revive it.",
+    "keyCharacteristics": [
+      "Deep charcoal canvas (#0D0E10) with lifted charcoal surfaces (#141619)",
+      "Soft cashmere text (#E6E2DD / #F5F3EF) — never pure harsh white",
+      "Amber only for seals, focus, and verification signal",
+      "Soft radii (12–16px) + offset drop-shadow lift on interactive surfaces",
+      "High-density spacing; monospace for telemetry and code only",
+      "Comfortable for long IDE / audit sessions"
+    ],
+    "rules": [
+      { "name": "The Amber Privilege", "body": "Amber appears on consensus seals, focus rings, and verification signal only. Never as generic “primary button” chrome across the app.", "section": "colors" },
+      { "name": "The Cashmere Text Rule", "body": "Body and headings use beige/cream — not #FFFFFF. Pure white is reserved for rare cream accents on charcoal.", "section": "colors" },
+      { "name": "The Telemetry Fence", "body": "Monospace only for code, counts, handles, URLs, and system telemetry.", "section": "typography" },
+      { "name": "The Lift-on-Touch Rule", "body": "Surfaces rest quiet; amber glow and stronger lift appear on hover/focus for interactive cards — not on every static panel.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do keep long-session comfort: deep charcoal, soft beige type, restrained amber.",
+      "Do use floating-card lift on Proof Cards and primary interactive surfaces.",
+      "Do reserve amber for seals, focus, and verification signal.",
+      "Do brand as Napsed everywhere."
+    ],
+    "donts": [
+      "Don't return to Swiss light-mode gallery white / vermillion / zero-radius.",
+      "Don't flood the UI with amber glows or neon cyber accents.",
+      "Don't use purple gradients, glassmorphism stacks, or pure white body text.",
+      "Don't costume ordinary labels in monospace."
+    ]
+  }
+}

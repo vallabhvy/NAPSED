@@ -1,0 +1,435 @@
+@import "tailwindcss";
+
+@theme {
+  /* Dynamic Semantic Variables */
+  --color-theme-base: var(--theme-base);
+  --color-theme-surface: var(--theme-surface);
+  --color-theme-ink: var(--theme-ink);
+  
+  --text-micro: 11px;
+  --text-micro--line-height: 1.2;
+  --text-nano: 10px;
+  --text-nano--line-height: 1.2;
+  --text-pico: 9px;
+  --text-pico--line-height: 1.2;
+  
+  --color-emerald-lens: #10b981;
+  --color-amber-lens: #f59e0b;
+
+  /* Aliases to prevent immediate breakage in unmigrated views (mapped to light mode) */
+  --color-charcoal-950: var(--theme-base);
+  --color-charcoal-surface: var(--theme-base);
+  --color-charcoal-card: var(--theme-surface);
+  --color-charcoal-base: var(--theme-base);
+  --color-slate: var(--theme-ink);
+  --color-greige: var(--theme-ink);
+  --color-beige: var(--theme-ink);
+  --color-cream: var(--theme-ink);
+  --color-amber-500: var(--theme-ink);
+  --color-amber-glow: rgba(29, 31, 35, 0.1);
+  --color-charcoal-900: var(--theme-base);
+  --color-greige-800: var(--theme-surface);
+  --color-beige-200: var(--theme-ink);
+  --color-cream-100: var(--theme-ink);
+  --color-mute-greige: var(--theme-ink);
+}
+
+@layer base {
+  :root {
+    --theme-base: #e6e2dd;
+    --theme-surface: #d8d3cc;
+    --theme-ink: #1d1f23;
+    
+    /* Tactile Light Variables */
+    --plate-shadow-light: rgba(255, 255, 255, 0.8);
+    --plate-shadow-dark1: rgba(0, 0, 0, 0.08);
+    --plate-shadow-dark2: rgba(0, 0, 0, 0.12);
+    --plate-border: #CCC7BF;
+    --recess-border: #B8B3AC;
+    --recess-bg: #D5D0C8;
+    
+    --screw-gradient: linear-gradient(135deg, #B8B3AC 0%, #D5D0C8 50%, #8C8781 100%);
+    --screw-border: #A39E98;
+    
+    --btn-sec-grad: linear-gradient(180deg, #E6E2DD 0%, #D5D0C8 100%);
+    --btn-sec-border: #A39E98;
+  }
+
+  .dark {
+    --theme-base: #0F1115;
+    --theme-surface: #1D1F23;
+    --theme-ink: #E6E2DD;
+    
+    /* Tactile Dark Variables */
+    --plate-shadow-light: rgba(255, 255, 255, 0.08);
+    --plate-shadow-dark1: rgba(0, 0, 0, 0.8);
+    --plate-shadow-dark2: rgba(0, 0, 0, 0.9);
+    --plate-border: #2A2D34;
+    --recess-border: #0A0C0E;
+    --recess-bg: #14161B;
+    
+    --screw-gradient: linear-gradient(135deg, #3A3D44 0%, #2A2D34 50%, #1A1D22 100%);
+    --screw-border: #0F1115;
+    
+    --btn-sec-grad: linear-gradient(180deg, #2A2D34 0%, #1D1F23 100%);
+    --btn-sec-border: #0F1115;
+  }
+
+  body {
+    background-color: var(--theme-base);
+    color: var(--theme-ink);
+    font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    overflow-x: hidden;
+  }
+
+  code,
+  pre,
+  .font-mono {
+    font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  ::selection {
+    background: rgba(29, 31, 35, 0.2);
+    color: var(--theme-ink);
+  }
+  
+  .dark ::selection {
+    background: rgba(230, 226, 221, 0.2);
+  }
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--theme-base);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--theme-ink);
+  border-radius: 0px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #666;
+}
+
+/* Functionalist modular blocks (no rounded corners, strict borders) */
+.floating-card {
+  background-color: var(--theme-surface);
+  border: 1px solid var(--theme-ink);
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.floating-card--interactive {
+  transition: background-color 0.15s ease;
+}
+
+.floating-card--interactive:hover {
+  background-color: var(--theme-base);
+  border-color: var(--theme-ink);
+  box-shadow: none;
+}
+
+/* Tactile debossed panel (like the histogram meter / LCD window) */
+.recessed-meter {
+  background: var(--recess-bg);
+  box-shadow: 
+    inset 0 2px 4px var(--plate-shadow-dark1),
+    inset 0 1px 2px var(--plate-shadow-dark2),
+    0 1px 0 var(--plate-shadow-light);
+  border: 1px solid var(--recess-border);
+}
+
+/* Elevated matte plate (faceplate module) */
+.chassis-plate {
+  background: var(--theme-base);
+  box-shadow: 
+    0 4px 12px var(--plate-shadow-dark1),
+    0 1px 2px var(--plate-shadow-dark2),
+    inset 0 1px 0 var(--plate-shadow-light);
+  border: 1px solid var(--plate-border);
+  position: relative;
+}
+
+/* Decorative Screw Heads for Chassis Plates */
+.chassis-plate::before,
+.chassis-plate::after,
+.chassis-plate.four-screws > .screw-tr,
+.chassis-plate.four-screws > .screw-bl {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--screw-gradient);
+  box-shadow: 
+    inset 0 1px 1px rgba(255, 255, 255, 0.2),
+    inset 0 -1px 1px rgba(0, 0, 0, 0.4),
+    0 1px 1px rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--screw-border);
+  pointer-events: none;
+}
+
+.chassis-plate::before { top: 6px; left: 6px; content: ''; }
+.chassis-plate::after { bottom: 6px; right: 6px; content: ''; }
+.chassis-plate.four-screws > .screw-tr { top: 6px; right: 6px; }
+.chassis-plate.four-screws > .screw-bl { bottom: 6px; left: 6px; }
+
+/* Physical Tactile Buttons (Charcoal Plastic) */
+.tactile-btn-primary {
+  background: linear-gradient(180deg, #2A2D34 0%, #1D1F23 100%);
+  box-shadow: 
+    inset 0 1px 1px rgba(255, 255, 255, 0.15),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.8),
+    0 4px 6px rgba(0, 0, 0, 0.3),
+    0 1px 2px rgba(0, 0, 0, 0.4);
+  border: 1px solid #000;
+  color: #E6E2DD;
+  transition: all 0.05s ease-out;
+}
+.tactile-btn-primary:active {
+  background: #1D1F23;
+  box-shadow: 
+    inset 0 2px 4px rgba(0, 0, 0, 0.8),
+    inset 0 4px 8px rgba(0, 0, 0, 0.6),
+    0 0 0 rgba(0, 0, 0, 0);
+  transform: translateY(2px);
+}
+
+/* Physical Tactile Buttons (Matte Metal) */
+.tactile-btn-secondary {
+  background: var(--btn-sec-grad);
+  box-shadow: 
+    inset 0 1px 1px var(--plate-shadow-light),
+    inset 0 -1px 2px var(--plate-shadow-dark1),
+    0 4px 6px var(--plate-shadow-dark1),
+    0 1px 2px var(--plate-shadow-dark2);
+  border: 1px solid var(--btn-sec-border);
+  color: var(--theme-ink);
+  transition: all 0.05s ease-out;
+}
+.tactile-btn-secondary:active {
+  background: var(--theme-surface);
+  box-shadow: 
+    inset 0 2px 4px var(--plate-shadow-dark1),
+    inset 0 4px 8px var(--plate-shadow-dark2),
+    0 0 0 rgba(0, 0, 0, 0);
+  transform: translateY(2px);
+}
+
+/* Tactile Physical Status Lenses */
+.status-lens-emerald,
+.status-lens-verified {
+  background: radial-gradient(circle at 35% 35%, #34D399 0%, #059669 60%, #064E3B 100%);
+  box-shadow: 
+    0 0 12px rgba(16, 185, 129, 0.6),
+    inset 0 2px 4px rgba(255, 255, 255, 0.6),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.4);
+  border: 1px solid #064E3B;
+  border-radius: 50%;
+}
+
+.status-lens-amber,
+.status-lens-mitigated {
+  background: radial-gradient(circle at 35% 35%, #FBBF24 0%, #D97706 60%, #78350F 100%);
+  box-shadow: 
+    0 0 10px rgba(245, 158, 11, 0.5),
+    inset 0 2px 4px rgba(255, 255, 255, 0.6),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.4);
+  border: 1px solid #78350F;
+  border-radius: 50%;
+}
+
+.status-lens-ruby {
+  background: radial-gradient(circle at 35% 35%, #F87171 0%, #DC2626 60%, #7F1D1D 100%);
+  box-shadow: 
+    0 0 10px rgba(220, 38, 38, 0.5),
+    inset 0 2px 4px rgba(255, 255, 255, 0.6),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.4);
+  border: 1px solid #7F1D1D;
+  border-radius: 50%;
+}
+
+.status-lens-sapphire {
+  background: radial-gradient(circle at 35% 35%, #60A5FA 0%, #2563EB 60%, #1E3A8A 100%);
+  box-shadow: 
+    0 0 10px rgba(37, 99, 235, 0.5),
+    inset 0 2px 4px rgba(255, 255, 255, 0.6),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.4);
+  border: 1px solid #1E3A8A;
+  border-radius: 50%;
+}
+
+/* Physical Tactile Accent Buttons (Braun Orange) */
+.tactile-btn-accent {
+  background: linear-gradient(180deg, #F97316 0%, #C2410C 100%);
+  box-shadow: 
+    inset 0 1px 1px rgba(255, 255, 255, 0.3),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.4),
+    0 4px 6px rgba(0, 0, 0, 0.15),
+    0 1px 2px rgba(0, 0, 0, 0.2);
+  border: 1px solid #7C2D12;
+  color: #FFF;
+  transition: all 0.05s ease-out;
+}
+.tactile-btn-accent:active {
+  background: #C2410C;
+  box-shadow: 
+    inset 0 2px 4px rgba(0, 0, 0, 0.4),
+    inset 0 4px 8px rgba(0, 0, 0, 0.3),
+    0 0 0 rgba(0, 0, 0, 0);
+  transform: translateY(2px);
+}
+
+/* Physical Tactile Accent Buttons (Braun Ruby) */
+.tactile-btn-danger {
+  background: linear-gradient(180deg, #EF4444 0%, #B91C1C 100%);
+  box-shadow: 
+    inset 0 1px 1px rgba(255, 255, 255, 0.3),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.4),
+    0 4px 6px rgba(0, 0, 0, 0.15),
+    0 1px 2px rgba(0, 0, 0, 0.2);
+  border: 1px solid #7F1D1D;
+  color: #FFF;
+  transition: all 0.05s ease-out;
+}
+.tactile-btn-danger:active {
+  background: #B91C1C;
+  box-shadow: 
+    inset 0 2px 4px rgba(0, 0, 0, 0.4),
+    inset 0 4px 8px rgba(0, 0, 0, 0.3),
+    0 0 0 rgba(0, 0, 0, 0);
+  transform: translateY(2px);
+}
+
+/* Legacy overrides mapped to functionalist styles */
+.consensus-seal {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-width: 7.25rem;
+  padding: 14px 16px;
+  background: #d8d3cc;
+  color: #1d1f23;
+  border: 1px solid #1d1f23;
+  border-radius: 0;
+  box-shadow: none;
+  font-family: "JetBrains Mono", ui-monospace, Menlo, monospace;
+  text-transform: uppercase;
+  transform: none;
+  user-select: none;
+}
+
+.consensus-seal--unearned {
+  background: #e6e2dd;
+  color: #1d1f23;
+  border: 1px dashed #1d1f23;
+  box-shadow: none;
+  transform: none;
+}
+
+.consensus-seal__mark {
+  font-size: 0.875rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  line-height: 1;
+}
+
+.consensus-seal__meta {
+  font-size: 0.5625rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-align: center;
+  max-width: 9rem;
+}
+
+.auditor-seal {
+  background: #d8d3cc;
+  color: #1d1f23;
+  border: 1px solid #1d1f23;
+  border-radius: 0;
+  box-shadow: none;
+  font-family: "JetBrains Mono", monospace;
+  text-transform: uppercase;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+}
+
+.tactile-badge {
+  background: #d8d3cc;
+  border: 1px solid #1d1f23;
+  color: #1d1f23;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.glow-amber {
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.5);
+}
+
+.glow-beige {
+  box-shadow: none;
+}
+
+.glow-greige {
+  box-shadow: none;
+}
+
+.focus-amber:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 1px #1d1f23;
+}
+
+.content-visibility-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 320px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .group .ide-hover-reveal {
+    opacity: 0;
+  }
+
+  .group:hover .ide-hover-reveal,
+  .group:focus-within .ide-hover-reveal {
+    opacity: 1;
+  }
+}
+
+@media (pointer: coarse) {
+  .ide-touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+@keyframes spinSlow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spinSlow 120s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-spin-slow,
+  .animate-spin {
+    animation: none !important;
+  }
+
+  .consensus-seal {
+    transform: none;
+  }
+
+  .floating-card--interactive {
+    transition: none;
+  }
+}

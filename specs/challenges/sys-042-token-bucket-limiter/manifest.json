@@ -1,0 +1,55 @@
+{
+  "schemaVersion": "1.1.0",
+  "specType": "CHALLENGE",
+  "specId": "sys-042-token-bucket-limiter",
+  "slug": "token-bucket-limiter",
+  "title": "Thread-Safe Token Bucket Limiter",
+  "track": "CONCURRENCY",
+  "difficulty": "INTERMEDIATE",
+  "estimatedTimeToSolveMinutes": 45,
+  "executionTier": "native",
+  "brief": {
+    "overview": "A production API gateway is shedding legitimate traffic and, worse, the limiter panics under load. The starter TokenBucket refills and deducts tokens with no synchronization. Your job is to make Allow() correct under concurrent callers: no data races, tokens never exceed capacity, and denied requests stay denied when the bucket is empty.",
+    "requirements": [
+      "Allow() must be safe for concurrent use by many goroutines (go test -race must be clean).",
+      "Tokens must never exceed capacity, including during refill bursts.",
+      "Refill must be time-based (tokens per second), not a ticker goroutine that can starve.",
+      "When fewer than 1.0 tokens remain, Allow() returns false and must not go negative."
+    ],
+    "hintsOrConstraints": [
+      "A mutex around refill + deduct is sufficient; atomics-only designs are easy to get wrong on the timestamp.",
+      "Do not spawn a background refill goroutine — it races shutdown and adds jitter.",
+      "Visible tests are single-threaded. Passing them does not mean the spec is solved."
+    ]
+  },
+  "workspace": {
+    "runtime": "go1.22",
+    "testCommand": "go test -v ./...",
+    "entrypoint": "limiter_test.go",
+    "files": []
+  },
+  "verification": {
+    "command": "go test -v -race -count=1 -timeout 10s ./...",
+    "timeoutSeconds": 10,
+    "maxMemoryMB": 128,
+    "raceDetector": true,
+    "compilerFlags": ["-race"],
+    "benchmarks": {
+      "maxP99Ms": 15.0,
+      "maxCpuSeconds": 2
+    },
+    "hiddenHarnessPath": "verification/verify_test.go"
+  },
+  "defenseGate": {
+    "question": "What did you do, and why did you do that?",
+    "placeholder": "Name the race, the critical section, and why you rejected a background ticker or lock-free refill.",
+    "minCharacters": 120,
+    "keywords": ["mutex", "race", "refill", "capacity", "critical section"],
+    "rejectBoilerplate": true
+  },
+  "package": {
+    "starterDir": "starter",
+    "solutionDir": "solution",
+    "verificationDir": "verification"
+  }
+}

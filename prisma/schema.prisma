@@ -1,0 +1,326 @@
+// ==========================================
+// DevProof (Napsed / REIP) Production Schema
+// ==========================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ------------------------------------------
+// Enums
+// ------------------------------------------
+
+enum Role {
+  JUNIOR
+  MID
+  SENIOR
+  STAFF
+  TECH_LEAD
+}
+
+enum DomainTrack {
+  // --- OLD VALUES (Retained for backward compatibility) ---
+  DEVOPS
+  BACKEND
+  SECURITY
+  FRONTEND_PERF
+
+  // --- CORE LAUNCH GUILDS ---
+  DISTRIBUTED_SYSTEMS
+  DEVOPS_INFRA
+  CLOUD_SECURITY
+  BACKEND_PERFORMANCE
+  FRONTEND_ARCHITECTURE
+  DATA_ENGINEERING
+
+  // --- SPECIALIZED GUILDS ---
+  SYSTEMS_PROGRAMMING    // C/C++, Embedded, OS Kernels, WASM
+  BLOCKCHAIN_CRYPTO      // Smart Contracts, ZK-Rollups, Consensus Protocols
+  AI_INFRA_MLOPS         // Model Serving, GPU Scheduling, Vector Indexing
+  DATABASE_INTERNALS     // B-Trees, LSM-Trees, Write-Ahead Logs (WAL)
+}
+
+enum Difficulty {
+  EASY
+  MEDIUM
+  HARD
+  EXPERT
+}
+
+enum SubmissionStatus {
+  PENDING_REVIEW
+  VERIFIED
+  NEEDS_REVISION
+}
+
+enum FeedType {
+  MICRO_BUILD
+  SENIOR_SPEC
+  JUNIOR_TIP
+  VERIFIED_AUDIT
+}
+
+// ------------------------------------------
+// 1. User Identity & Engineering Profile
+// (GitHub-only OAuth Authentication)
+// ------------------------------------------
+
+model User {
+  id                 String            @id @default(uuid())
+  email              String            @unique
+  username           String            @unique // Primary GitHub Handle
+  githubId           String            @unique // GitHub OAuth Provider ID
+  name               String
+  avatarUrl          String?
+  role               Role              @default(SENIOR)
+  bio                String?           @db.Text
+  githubUrl          String            // https://github.com/{username}
+  streakDays         Int               @default(0)
+  karmaPoints        Int               @default(0)
+  acceptanceRate     Float             @default(100.0)
+  submissionsAudited Int               @default(0)
+  dailyTargetMinutes Int               @default(30)
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+
+  // Relationships
+  submissions        Submission[]      @relation("UserSubmissions")
+  reviewsGiven       PeerReview[]      @relation("UserReviews")
+  guildMemberships   GuildMembership[]
+  badges             GuildBadge[]
+  uploadedDatasets   Dataset[]
+  feedPosts          FeedItem[]
+  simulationRuns     SimulationRun[]
+
+  @@index([githubId])
+  @@index([username])
+}
+
+// ------------------------------------------
+// 2. Low-Level Guild Matrix
+// ------------------------------------------
+
+model Guild {
+  id          String            @id @default(uuid())
+  name        String            @unique
+  slug        DomainTrack       @unique
+  description String            @db.Text
+  iconName    String            @default("Shield")
+  memberCount Int               @default(0)
+  totalKarma  Int               @default(0)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  memberships GuildMembership[]
+}
+
+model GuildMembership {
+  id       String   @id @default(uuid())
+  userId   String
+  guildId  String
+  role     String   @default("MEMBER") // LEADER, AUDITOR, MEMBER
+  joinedAt DateTime @default(now())
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  guild    Guild    @relation(fields: [guildId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, guildId])
+}
+
+// ------------------------------------------
+// 3. Unified Manifest for Practice & Challenge Specs
+// ------------------------------------------
+
+enum SpecType {
+  PRACTICE
+  CHALLENGE
+}
+
+model Spec {
+  id              String       @id @default(uuid())
+  slug            String       @unique
+  specId          String       @unique @map("spec_id")
+  title           String
+  specType        SpecType     @map("spec_type")
+  track           String
+  difficulty      String
+  manifest        Json         // Full declarative JSON stored directly
+  createdAt       DateTime     @default(now()) @map("created_at")
+  submissions     Submission[]
+
+  @@map("specs")
+}
+
+// ------------------------------------------
+// 4. Code & Trade-off Submissions
+// ------------------------------------------
+
+model Submission {
+  id            String   @id @default(uuid())
+  specId        String   @map("spec_id")
+  userId        String   @map("user_id")
+  codeFiles     Json     @map("code_files")
+  defenseAnswer String   @map("defense_answer") @db.Text
+  status        SubmissionStatus @default(PENDING_REVIEW)
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  spec          Spec     @relation(fields: [specId], references: [id], onDelete: Cascade)
+  author        User     @relation("UserSubmissions", fields: [userId], references: [id], onDelete: Cascade)
+  reviews       PeerReview[]
+
+  @@map("submissions")
+}
+
+// ------------------------------------------
+// 5. Consensus Peer Auditing Hub
+// ------------------------------------------
+
+model PeerReview {
+  id                   String     @id @default(uuid())
+  submissionId         String
+  reviewerId           String
+  architectureRating   Int        @default(5) // 1-5
+  edgeCasesRating      Int        @default(5) // 1-5
+  defenseClarityRating Int        @default(5) // 1-5
+  overallScore         Float      @default(5.0)
+  feedbackText         String     @db.Text
+  inlineComments       Json       @default("[]") // Array of { lineNumber, comment }
+  upvotesCount         Int        @default(0)
+  createdAt            DateTime   @default(now())
+
+  submission           Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  reviewer             User       @relation("UserReviews", fields: [reviewerId], references: [id], onDelete: Restrict)
+
+  @@unique([submissionId, reviewerId]) // Prevents duplicate reviews per reviewer on a submission
+  @@index([submissionId])
+  @@index([reviewerId])
+}
+
+// ------------------------------------------
+// 6. Cryptographic Proof Ledger & Badges
+// ------------------------------------------
+
+model GuildBadge {
+  id            String      @id @default(uuid())
+  userId        String
+  name          String
+  track         DomainTrack
+  level         String      @default("L3")
+  iconName      String      @default("Award")
+  consensusHash String
+  auditedBy     String
+  verifiedAt    DateTime    @default(now())
+
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([track])
+}
+
+// ------------------------------------------
+// 7. Dataset Catalog & Licensing Architecture
+// (dataset-metadata-architecture skill)
+// ------------------------------------------
+
+model License {
+  id              String    @id @default(uuid())
+  name            String
+  code            String    @unique
+  isProprietary   Boolean   @default(false)
+  geoRestrictions String[]  @default([])
+  userAccessScope String    @default("ALL")
+  pricingTier     String    @default("FREE")
+  termsUrl        String?
+  createdAt       DateTime  @default(now())
+
+  datasets        Dataset[]
+}
+
+model Dataset {
+  id               String   @id @default(uuid())
+  name             String
+  slug             String   @unique
+  description      String   @db.Text
+  fileType         String
+  sizeBytes        BigInt
+  storageUri       String
+  domain           String
+  source           String
+  tags             String[]
+  accessRules      String   @default("PUBLIC")
+  customAttributes Json?    @default("{}")
+
+  licenseId        String
+  license          License  @relation(fields: [licenseId], references: [id])
+
+  uploaderId       String
+  uploader         User     @relation(fields: [uploaderId], references: [id])
+
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([domain])
+  @@index([fileType])
+  @@index([licenseId])
+}
+
+// ------------------------------------------
+// 8. Protocol Feed & Activity Stream
+// ------------------------------------------
+
+model FeedItem {
+  id            String      @id @default(uuid())
+  type          FeedType    @default(MICRO_BUILD)
+  title         String
+  summary       String      @db.Text
+  codeSnippet   String?     @db.Text
+  language      String?
+  commentsCount Int         @default(0)
+  upvotes       Int         @default(0)
+  track         DomainTrack
+  authorId      String
+  createdAt     DateTime    @default(now())
+
+  author        User        @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@index([track])
+  @@index([createdAt])
+}
+
+// ------------------------------------------
+// 9. Production Incident & Load Simulation Engine
+// ------------------------------------------
+
+model SimulationSpec {
+  id                String   @id @default(uuid())
+  title             String
+  track             DomainTrack
+  slug              String   @unique
+  incidentScenario  String   @db.Text
+  starterWorkspaceId String? 
+  targetMetrics     Json     // e.g. {"max_p99_ms": 50, "max_error_rate": 0.01}
+  createdAt         DateTime @default(now())
+
+  runs              SimulationRun[]
+}
+
+model SimulationRun {
+  id                   String   @id @default(uuid())
+  specId               String
+  userId               String
+  initialP99Ms         Float
+  resolvedP99Ms        Float
+  simulatedSeed        String
+  timeToResolveSeconds Int
+  postMortemRca        String   @db.Text
+  postMortemTradeoffs  String   @db.Text
+  status               String   @default("PENDING_AUDIT") // PENDING_AUDIT, VERIFIED, FAILED
+  createdAt            DateTime @default(now())
+
+  spec                 SimulationSpec @relation(fields: [specId], references: [id], onDelete: Cascade)
+  user                 User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+}

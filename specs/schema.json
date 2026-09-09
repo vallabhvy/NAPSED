@@ -1,0 +1,233 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://napsed.dev/schema/spec-manifest-1.1.0.json",
+  "title": "NapsedSpecManifest",
+  "description": "Declarative contract for a Napsed spec package. Git layout is starter/, solution/, verification/; workspace.files is the hydrated Monaco payload.",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "specType",
+    "specId",
+    "slug",
+    "title",
+    "track",
+    "difficulty",
+    "estimatedTimeToSolveMinutes",
+    "brief",
+    "workspace",
+    "defenseGate"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "enum": ["1.0.0", "1.1.0"]
+    },
+    "specType": {
+      "type": "string",
+      "enum": ["PRACTICE", "CHALLENGE"]
+    },
+    "specId": {
+      "type": "string",
+      "pattern": "^(prac|chal|sys)-[a-z0-9-]+$",
+      "description": "Stable human ID. Practice: prac-*; Challenge: chal-* or sys-*."
+    },
+    "slug": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "title": { "type": "string", "minLength": 8, "maxLength": 120 },
+    "track": {
+      "type": "string",
+      "enum": [
+        "CONCURRENCY",
+        "DATA_STRUCTURES",
+        "SYSTEM_DESIGN",
+        "DEVOPS",
+        "BACKEND",
+        "SECURITY",
+        "FRONTEND_PERF",
+        "PERFORMANCE",
+        "DISTRIBUTED_SYSTEMS",
+        "DEVOPS_INFRA",
+        "CLOUD_SECURITY",
+        "BACKEND_PERFORMANCE",
+        "FRONTEND_ARCHITECTURE",
+        "DATA_ENGINEERING",
+        "SYSTEMS_PROGRAMMING",
+        "BLOCKCHAIN_CRYPTO",
+        "AI_INFRA_MLOPS",
+        "DATABASE_INTERNALS",
+        "OBJECT_ORIENTED_DESIGN"
+      ]
+    },
+    "difficulty": {
+      "type": "string",
+      "enum": ["BEGINNER", "INTERMEDIATE", "ADVANCED"]
+    },
+    "estimatedTimeToSolveMinutes": {
+      "type": "integer",
+      "minimum": 5,
+      "maximum": 240
+    },
+    "executionTier": {
+      "type": "string",
+      "enum": ["wasm", "native", "microvm"],
+      "description": "wasm = in-browser workers; native = Judge0 Linux sandbox; microvm = future."
+    },
+    "brief": {
+      "type": "object",
+      "required": ["overview", "requirements", "hintsOrConstraints"],
+      "additionalProperties": false,
+      "properties": {
+        "overview": { "type": "string", "minLength": 40 },
+        "requirements": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 2
+        },
+        "hintsOrConstraints": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "workspace": {
+      "type": "object",
+      "required": ["runtime", "testCommand", "files"],
+      "additionalProperties": false,
+      "properties": {
+        "runtime": {
+          "type": "string",
+          "enum": [
+            "node20",
+            "browser-js",
+            "pyodide",
+            "go1.22",
+            "python3.11",
+            "rust1.76",
+            "cpp20",
+            "java21"
+          ]
+        },
+        "testCommand": { "type": "string", "minLength": 1 },
+        "entrypoint": { "type": "string" },
+        "files": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["path", "readOnly", "content"],
+            "additionalProperties": false,
+            "properties": {
+              "path": { "type": "string", "minLength": 1 },
+              "readOnly": { "type": "boolean" },
+              "content": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "verification": {
+      "type": "object",
+      "required": ["command", "timeoutSeconds", "maxMemoryMB", "raceDetector"],
+      "additionalProperties": false,
+      "properties": {
+        "command": { "type": "string" },
+        "timeoutSeconds": { "type": "integer", "minimum": 1, "maximum": 60 },
+        "maxMemoryMB": { "type": "integer", "minimum": 16, "maximum": 1024 },
+        "raceDetector": { "type": "boolean" },
+        "compilerFlags": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "benchmarks": {
+          "type": "object",
+          "required": ["maxP99Ms"],
+          "additionalProperties": false,
+          "properties": {
+            "maxP99Ms": { "type": "number", "minimum": 0 },
+            "maxCpuSeconds": { "type": "number", "minimum": 0 }
+          }
+        },
+        "hiddenHarnessPath": { "type": "string" }
+      }
+    },
+    "defenseGate": {
+      "type": "object",
+      "required": ["question", "placeholder", "minCharacters"],
+      "additionalProperties": false,
+      "properties": {
+        "question": {
+          "type": "string",
+          "const": "What did you do, and why did you do that?"
+        },
+        "placeholder": { "type": "string" },
+        "minCharacters": { "type": "integer", "minimum": 60 },
+        "keywords": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 2 },
+          "minItems": 2
+        },
+        "rejectBoilerplate": { "type": "boolean", "default": true }
+      }
+    },
+    "package": {
+      "type": "object",
+      "required": ["starterDir", "solutionDir", "verificationDir"],
+      "additionalProperties": false,
+      "properties": {
+        "starterDir": { "type": "string", "const": "starter" },
+        "solutionDir": { "type": "string", "const": "solution" },
+        "verificationDir": { "type": "string", "const": "verification" }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "schemaVersion": { "const": "1.1.0" } },
+        "required": ["schemaVersion"]
+      },
+      "then": {
+        "required": ["executionTier", "verification"],
+        "properties": {
+          "defenseGate": {
+            "required": ["question", "placeholder", "minCharacters", "keywords"]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": { "executionTier": { "const": "wasm" } }
+      },
+      "then": {
+        "properties": {
+          "workspace": {
+            "properties": {
+              "runtime": {
+                "enum": ["node20", "browser-js", "pyodide", "python3.11"]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": { "executionTier": { "const": "native" } }
+      },
+      "then": {
+        "properties": {
+          "workspace": {
+            "properties": {
+              "runtime": {
+                "enum": ["go1.22", "rust1.76", "cpp20", "java21"]
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}
