@@ -27,6 +27,7 @@ const terminalLines = [
   { prompt: "✓", text: "GitHub identity attested", tone: "text-theme-ink" },
   { prompt: "✓", text: "3 architectural defenses verified", tone: "text-theme-ink" },
   { prompt: "✓", text: "immutable proof card issued: napsed.com/@alex_r", tone: "text-theme-ink/60" },
+  { prompt: "i", text: "100% free · community compute backed by github.com/sponsors/vallabhvy", tone: "text-theme-ink/50" },
 ];
 
 export const LandingView: React.FC<LandingViewProps> = ({
@@ -97,9 +98,34 @@ export const LandingView: React.FC<LandingViewProps> = ({
     >
       <ProtocolBackground opacityClassName="opacity-70" />
 
-      {/* Lean Navigation */}
-      <div className="fixed top-0 left-0 right-0 z-50 border-b recessed-meter bg-theme-base/85 backdrop-blur-md">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+      {/* Lean Navigation & Top Infrastructure Utility Strip */}
+      <header className="fixed top-0 left-0 right-0 z-50">
+        {/* Top Utility Strip: Infrastructure Status */}
+        <aside aria-label="Infrastructure Status" className="border-b border-theme-ink bg-[#1D1F23] text-theme-base py-1.5 px-3 sm:px-6 text-[11px] font-mono tracking-wider">
+          <div className="mx-auto flex max-w-7xl items-center justify-between gap-2">
+            <div className="flex items-center gap-2 overflow-hidden truncate">
+              <span className="inline-flex items-center gap-1.5 font-bold text-emerald-400 shrink-0">
+                <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                [ INFRASTRUCTURE: COMMUNITY-SUPPORTED ]
+              </span>
+              <span className="hidden md:inline text-theme-base/80 truncate">
+                100% free & open-source. Hosted sandboxes subsidized out-of-pocket.
+              </span>
+            </div>
+            <a
+              href="https://github.com/sponsors/vallabhvy"
+              target="_blank"
+              rel="noreferrer"
+              className="shrink-0 font-bold underline hover:text-amber-300 transition flex items-center gap-1"
+            >
+              Sponsor Infrastructure →
+            </a>
+          </div>
+        </aside>
+
+        {/* Primary Navbar */}
+        <div className="border-b recessed-meter bg-theme-base/85 backdrop-blur-md">
+          <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <button
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
             className="flex items-center transition-opacity hover:opacity-80 shrink-0"
@@ -180,6 +206,14 @@ export const LandingView: React.FC<LandingViewProps> = ({
               Open Source
             </button>
             <a
+              href="https://github.com/sponsors/vallabhvy"
+              target="_blank"
+              rel="noreferrer"
+              className="block py-1.5 text-amber-600 dark:text-amber-400 hover:opacity-80"
+            >
+              Sponsor Infrastructure →
+            </a>
+            <a
               href="https://github.com/vallabhvy/NAPSED"
               target="_blank"
               rel="noreferrer"
@@ -197,9 +231,10 @@ export const LandingView: React.FC<LandingViewProps> = ({
             </div>
           </div>
         )}
-      </div>
+        </div>
+      </header>
 
-      <main className="relative z-10 pt-24 mx-auto max-w-7xl px-4 sm:px-6">
+      <main className="relative z-10 pt-28 sm:pt-32 mx-auto max-w-7xl px-4 sm:px-6">
         
         {/* 1. Hero Section */}
         <div className="grid items-center gap-12 lg:grid-cols-2 py-12">
@@ -485,6 +520,50 @@ Found 1 data race(s)`}
             </button>
           </div>
         </section>
+
+        {/* Hosted Compute Status & Transparency Hardware Plate */}
+        <section className="mt-16 mb-6">
+          <div className="rounded-none chassis-plate four-screws p-6 sm:p-8 bg-theme-base border border-theme-ink/40 relative">
+            <div className="screw-tr"></div><div className="screw-bl"></div>
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+              <div className="space-y-2 max-w-2xl">
+                <div className="flex items-center gap-2">
+                  <span className="inline-block w-2 h-2 rounded-full bg-emerald-500"></span>
+                  <h3 className="font-mono text-xs uppercase tracking-widest font-bold text-theme-ink">
+                    HOSTED COMPUTE STATUS // ALPHA TRANSPARENCY
+                  </h3>
+                </div>
+                <p className="text-xs text-theme-ink/80 leading-relaxed font-sans font-medium">
+                  All browser-based WASM specs run locally at zero cost. Remote Linux sandboxes (<code className="font-mono bg-theme-ink/10 px-1 py-0.5 rounded-none font-bold">-race</code>, Go 1.22) run on isolated compute instances funded out-of-pocket by maintainers and open-source backers.
+                </p>
+              </div>
+              <div className="flex flex-wrap items-center gap-2.5 shrink-0 font-mono text-xs uppercase font-bold">
+                <a
+                  href="https://github.com/vallabhvy/NAPSED"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="tactile-btn-secondary px-3.5 py-2 text-theme-ink inline-flex items-center gap-1.5"
+                >
+                  View GitHub Repo
+                </a>
+                <button
+                  onClick={() => scrollTo('how-it-works')}
+                  className="tactile-btn-secondary px-3.5 py-2 text-theme-ink inline-flex items-center gap-1.5"
+                >
+                  Read the Specs
+                </button>
+                <a
+                  href="https://github.com/sponsors/vallabhvy"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="tactile-btn-primary px-4 py-2 text-theme-base inline-flex items-center gap-1.5"
+                >
+                  Support on GitHub Sponsors →
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
       </main>
 
       {/* Functional Footer */}
@@ -509,6 +588,7 @@ Found 1 data race(s)`}
               <ul className="space-y-2 text-sm font-medium text-theme-ink/70">
                 <li><a href="https://github.com/vallabhvy/NAPSED" target="_blank" rel="noreferrer" className="hover:text-theme-ink transition">Documentation</a></li>
                 <li><a href="https://github.com/vallabhvy/NAPSED" target="_blank" rel="noreferrer" className="hover:text-theme-ink transition">GitHub Repository</a></li>
+                <li><a href="https://github.com/sponsors/vallabhvy" target="_blank" rel="noreferrer" className="hover:text-theme-ink transition font-bold text-amber-600 dark:text-amber-400">Sponsor Infrastructure</a></li>
               </ul>
             </div>
             <div>

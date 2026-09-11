@@ -6,6 +6,10 @@ This is an assessment engine for senior systems engineers. Specs are real failur
 
 **Hosted platform:** [napsed.com](https://napsed.com) · Proof cards: `napsed.com/@handle`
 
+> [!NOTE]
+> ### Alpha Status & Free Tier Transparency
+> Napsed is currently in active development and 100% free. All practice specs run client-side in your browser via WebAssembly ($0 compute cost). Remote native sandboxes are rate-limited to keep server costs sustainable. If you find the platform valuable and want to help support our infrastructure, consider backing us on **[GitHub Sponsors](https://github.com/sponsors/vallabhvy)**.
+
 ---
 
 ## Cashmere & Concrete
