@@ -9,7 +9,7 @@
     "lint": "oxlint",
     "preview": "vite preview",
     "hydrate:specs": "node scripts/hydrate-specs.mjs",
-    "sync:specs": "node scripts/sync-specs.mjs",
+    "sync:specs": "node --env-file-if-exists=.env scripts/sync-specs.mjs",
     "preflight:specs": "node scripts/preflight-spec.mjs"
   },
   "dependencies": {
