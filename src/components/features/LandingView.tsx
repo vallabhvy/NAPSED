@@ -8,7 +8,9 @@ import {
   Sun,
   ShieldAlert,
   Cpu,
-  ChevronDown
+  ChevronDown,
+  Menu,
+  X
 } from "lucide-react";
 import { ProtocolBackground } from "../ui/ProtocolBackground";
 import { Logo } from "../ui/Logo";
@@ -37,6 +39,7 @@ export const LandingView: React.FC<LandingViewProps> = ({
   const { theme, setTheme } = useTheme();
 
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const run = (event: React.FormEvent) => {
     event.preventDefault();
@@ -74,7 +77,7 @@ export const LandingView: React.FC<LandingViewProps> = ({
     },
     {
       q: "Do I need to install anything locally?",
-      a: "No. You can practice directly in our client-side WASM environment. Pro users get access to server-side Judge0 containers for heavy concurrency specs."
+      a: "No. You can practice directly in our client-side WASM environment with zero setup, zero compute costs, and zero subscription fees. Heavy native specs run via sandboxed Linux containers."
     },
     {
       q: "Who owns the code I write?",
@@ -95,11 +98,11 @@ export const LandingView: React.FC<LandingViewProps> = ({
       <ProtocolBackground opacityClassName="opacity-70" />
 
       {/* Lean Navigation */}
-      <div className="fixed top-0 left-0 right-0 z-50 border-b recessed-meter bg-theme-base/80 backdrop-blur-md">
+      <div className="fixed top-0 left-0 right-0 z-50 border-b recessed-meter bg-theme-base/85 backdrop-blur-md">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <button
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-            className="flex items-center transition-opacity hover:opacity-80"
+            className="flex items-center transition-opacity hover:opacity-80 shrink-0"
           >
             <Logo size="md" light={theme === 'dark'} />
           </button>
@@ -107,11 +110,11 @@ export const LandingView: React.FC<LandingViewProps> = ({
           <div className="hidden md:flex items-center gap-6 font-mono text-xs uppercase tracking-wider font-bold">
             <button onClick={() => scrollTo('how-it-works')} className="hover:text-theme-ink/70 transition">How it Works</button>
             <button onClick={() => scrollTo('features')} className="hover:text-theme-ink/70 transition">Features</button>
-            <button onClick={() => scrollTo('pricing')} className="hover:text-theme-ink/70 transition">Pricing</button>
-            <a href="https://github.com" target="_blank" rel="noreferrer" className="hover:text-theme-ink/70 transition flex items-center gap-1">Docs</a>
+            <button onClick={() => scrollTo('open-source')} className="hover:text-theme-ink/70 transition">Open Source</button>
+            <a href="https://github.com/vallabhvy/NAPSED" target="_blank" rel="noreferrer" className="hover:text-theme-ink/70 transition flex items-center gap-1">Docs</a>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="hidden sm:flex items-center gap-3">
             <button
               onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
               className="flex items-center justify-center tactile-btn-secondary h-[34px] w-[40px] rounded-none transition"
@@ -131,7 +134,69 @@ export const LandingView: React.FC<LandingViewProps> = ({
               {isAuthenticated ? "GO TO FEED" : "SIGN IN"}
             </button>
           </div>
+
+          {/* Mobile hamburger controls */}
+          <div className="flex sm:hidden items-center gap-2">
+            <button
+              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              className="flex items-center justify-center tactile-btn-secondary h-[34px] w-[34px] rounded-none transition"
+              aria-label="Toggle Theme"
+            >
+              {theme === 'dark' ? (
+                <Sun className="h-4 w-4 text-theme-ink" />
+              ) : (
+                <Moon className="h-4 w-4 text-theme-ink" />
+              )}
+            </button>
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="p-1.5 text-theme-ink border border-theme-ink rounded-none bg-theme-base"
+              aria-label="Toggle Navigation Menu"
+            >
+              {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </button>
+          </div>
         </div>
+
+        {/* Mobile dropdown drawer */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden border-t border-theme-ink bg-theme-base/95 backdrop-blur-md px-4 py-4 space-y-3 font-mono text-xs uppercase font-bold tracking-wider">
+            <button
+              onClick={() => { scrollTo('how-it-works'); setIsMobileMenuOpen(false); }}
+              className="block w-full text-left py-1.5 hover:text-theme-ink/70"
+            >
+              How It Works
+            </button>
+            <button
+              onClick={() => { scrollTo('features'); setIsMobileMenuOpen(false); }}
+              className="block w-full text-left py-1.5 hover:text-theme-ink/70"
+            >
+              Features
+            </button>
+            <button
+              onClick={() => { scrollTo('open-source'); setIsMobileMenuOpen(false); }}
+              className="block w-full text-left py-1.5 hover:text-theme-ink/70"
+            >
+              Open Source
+            </button>
+            <a
+              href="https://github.com/vallabhvy/NAPSED"
+              target="_blank"
+              rel="noreferrer"
+              className="block py-1.5 hover:text-theme-ink/70"
+            >
+              GitHub & Docs
+            </a>
+            <div className="pt-2">
+              <button
+                onClick={() => { onStart(); setIsMobileMenuOpen(false); }}
+                className="tactile-btn-primary w-full py-2.5 text-center text-theme-base text-xs font-bold"
+              >
+                {isAuthenticated ? "GO TO FEED" : "SIGN IN WITH GITHUB"}
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       <main className="relative z-10 pt-24 mx-auto max-w-7xl px-4 sm:px-6">
@@ -143,7 +208,7 @@ export const LandingView: React.FC<LandingViewProps> = ({
               <span className="status-lens-verified inline-block h-2 w-2" />
               100% Deterministic Verification // Zero Algorithmic LeetCode Fluff
             </p>
-            <h1 className="mt-4 text-4xl font-extrabold tracking-tight uppercase sm:text-6xl leading-[1.1]">
+            <h1 className="mt-4 text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight uppercase leading-[1.1]">
               PROVE YOUR ENGINEERING SKILLS WITH{" "}
               <span className="text-theme-ink">DETERMINISTIC VERIFICATION.</span>
             </h1>
@@ -294,7 +359,7 @@ export const LandingView: React.FC<LandingViewProps> = ({
                </ul>
              </div>
              <div className="rounded-none chassis-plate four-screws p-1 bg-theme-ink">
-                <pre className="p-4 text-theme-base bg-[#1D1F23] text-xs font-mono overflow-hidden">
+                <pre className="p-3 sm:p-4 text-theme-base bg-[#1D1F23] text-[11px] sm:text-xs font-mono overflow-x-auto">
 {`$ go test -race ./...
 ==================
 WARNING: DATA RACE
@@ -331,28 +396,36 @@ Found 1 data race(s)`}
 
         </section>
 
-        {/* 6. Pricing */}
-        <section id="pricing" className="py-20 max-w-4xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-2xl sm:text-3xl font-extrabold uppercase tracking-widest">Simple, Transparent Pricing</h2>
+        {/* 6. 100% Free & Open Source */}
+        <section id="open-source" className="py-16 sm:py-20 max-w-4xl mx-auto px-4 sm:px-6">
+          <div className="text-center mb-10">
+            <p className="font-mono text-xs uppercase tracking-widest text-theme-ink/60 mb-2">Zero Paywalls · Zero Subscription Fees</p>
+            <h2 className="text-2xl sm:text-3xl font-extrabold uppercase tracking-widest">100% Free & Open Source</h2>
           </div>
           <div className="max-w-xl mx-auto">
-            <div className="rounded-none chassis-plate four-screws p-10 ring-2 ring-theme-ink bg-theme-ink/5 flex flex-col relative overflow-hidden">
+            <div className="rounded-none chassis-plate four-screws p-6 sm:p-10 ring-2 ring-theme-ink bg-theme-ink/5 flex flex-col relative overflow-hidden">
               <div className="screw-tr"></div><div className="screw-bl"></div>
-              <div className="absolute top-4 right-4">
-                <span className="text-[10px] font-mono uppercase bg-theme-ink text-theme-base px-3 py-1 font-bold">7-Day Free Trial</span>
+              <div className="flex items-center justify-between gap-2 mb-3">
+                <h3 className="font-mono font-bold uppercase tracking-wider text-theme-ink text-sm sm:text-base">Open Core Assessment Engine</h3>
+                <span className="text-[10px] font-mono uppercase bg-theme-ink text-theme-base px-2.5 py-1 font-bold shrink-0">Apache-2.0</span>
               </div>
-              <h3 className="font-mono font-bold uppercase tracking-wider text-theme-ink mb-2">Staff Engineer Access</h3>
-              <div className="text-4xl font-extrabold font-mono tabular-nums mb-6">₹199<span className="text-sm text-theme-ink/60 font-sans font-bold">/mo</span> <span className="text-xs text-theme-ink/60 font-sans font-medium">(or $12/mo Global)</span></div>
-              <ul className="space-y-4 text-sm font-medium flex-1 mb-10">
-                <li className="flex items-start gap-3"><CheckCircle2 className="w-5 h-5 shrink-0 mt-0.5"/> Unlimited WASM & Judge0 server-side concurrency specs.</li>
-                <li className="flex items-start gap-3"><CheckCircle2 className="w-5 h-5 shrink-0 mt-0.5"/> Advanced -race telemetry & latency deltas.</li>
-                <li className="flex items-start gap-3"><CheckCircle2 className="w-5 h-5 shrink-0 mt-0.5"/> Peer-audited defense submissions.</li>
-                <li className="flex items-start gap-3"><CheckCircle2 className="w-5 h-5 shrink-0 mt-0.5"/> Public immutable proof profile.</li>
+              <div className="text-3xl sm:text-4xl font-extrabold font-mono tabular-nums mb-2 text-theme-ink">
+                $0 <span className="text-sm text-theme-ink/60 font-sans font-bold">/ forever</span>
+              </div>
+              <p className="text-xs font-medium text-theme-ink/70 mb-6 leading-relaxed">
+                All Tier 1 WASM practice specs run client-side in your browser at $0 compute cost. No subscriptions, no credit cards, no trial periods.
+              </p>
+              <ul className="space-y-3 text-xs sm:text-sm font-medium flex-1 mb-8">
+                <li className="flex items-start gap-3"><CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 shrink-0 mt-0.5 text-theme-ink"/> Free, unlimited in-browser WASM practice execution.</li>
+                <li className="flex items-start gap-3"><CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 shrink-0 mt-0.5 text-theme-ink"/> Open spec authoring packages under schema 1.1.0.</li>
+                <li className="flex items-start gap-3"><CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 shrink-0 mt-0.5 text-theme-ink"/> Peer-audited architectural trade-off defense gate.</li>
+                <li className="flex items-start gap-3"><CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 shrink-0 mt-0.5 text-theme-ink"/> Public verifiable proof cards at napsed.com/@handle.</li>
               </ul>
-              <div className="space-y-3">
-                <button onClick={onStart} className="tactile-btn-primary w-full py-4 uppercase font-bold tracking-wider text-sm text-theme-base">Start 7-Day Free Trial</button>
-                <p className="text-center text-xs font-mono text-theme-ink/60">No credit card required until day 7.</p>
+              <div className="space-y-2.5">
+                <button onClick={onStart} className="tactile-btn-primary w-full py-3.5 sm:py-4 uppercase font-bold tracking-wider text-xs sm:text-sm text-theme-base">
+                  Start Solving Specs Free
+                </button>
+                <p className="text-center text-[11px] font-mono text-theme-ink/60">GitHub sign-in only • Zero credit card required</p>
               </div>
             </div>
           </div>
@@ -428,15 +501,14 @@ Found 1 data race(s)`}
               <ul className="space-y-2 text-sm font-medium text-theme-ink/70">
                 <li><button onClick={() => scrollTo('features')} className="hover:text-theme-ink transition">Features</button></li>
                 <li><button onClick={() => scrollTo('how-it-works')} className="hover:text-theme-ink transition">How it Works</button></li>
-                <li><button onClick={() => scrollTo('pricing')} className="hover:text-theme-ink transition">Pricing</button></li>
+                <li><button onClick={() => scrollTo('open-source')} className="hover:text-theme-ink transition">Open Source</button></li>
               </ul>
             </div>
             <div>
               <h4 className="font-bold uppercase tracking-widest text-xs mb-4">Resources</h4>
               <ul className="space-y-2 text-sm font-medium text-theme-ink/70">
-                <li><a href="https://github.com" target="_blank" rel="noreferrer" className="hover:text-theme-ink transition">Documentation</a></li>
-                <li><a href="https://github.com" target="_blank" rel="noreferrer" className="hover:text-theme-ink transition">Status Monitor</a></li>
-                <li><a href="https://github.com" target="_blank" rel="noreferrer" className="hover:text-theme-ink transition">GitHub Repository</a></li>
+                <li><a href="https://github.com/vallabhvy/NAPSED" target="_blank" rel="noreferrer" className="hover:text-theme-ink transition">Documentation</a></li>
+                <li><a href="https://github.com/vallabhvy/NAPSED" target="_blank" rel="noreferrer" className="hover:text-theme-ink transition">GitHub Repository</a></li>
               </ul>
             </div>
             <div>

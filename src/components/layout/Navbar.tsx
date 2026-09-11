@@ -158,20 +158,25 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
       </div>
 
-      <div className="flex md:hidden border-t chassis-plate px-2 py-1.5 justify-around gap-1">
+      <div className="flex md:hidden border-t chassis-plate px-2 py-1.5 overflow-x-auto whitespace-nowrap scrollbar-none gap-1.5">
         {primaryNavItems.map((item) => {
           const isActive = activePrimary === item.id;
           return (
             <button
               key={item.id}
               onClick={() => onSelectTab(item.targetScreen)}
-              className={`flex items-center gap-1.5 rounded-none px-2.5 py-1.5 text-xs uppercase font-medium tracking-wider ${
+              className={`flex items-center gap-1.5 rounded-none px-3 py-1.5 text-xs uppercase font-medium tracking-wider shrink-0 ${
                 isActive
-                  ? "bg-[#1D1F23] text-theme-base"
-                  : "text-theme-ink/60"
+                  ? "bg-[#1D1F23] text-theme-base font-bold"
+                  : "text-theme-ink/70 hover:text-theme-ink"
               }`}
             >
               <span>{item.label}</span>
+              {item.badgeCount && item.badgeCount > 0 ? (
+                <span className="rounded-none bg-theme-base text-theme-ink px-1.5 py-0.2 text-[10px] font-mono font-bold">
+                  {item.badgeCount}
+                </span>
+              ) : null}
             </button>
           );
         })}
