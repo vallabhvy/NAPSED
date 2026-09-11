@@ -19,7 +19,7 @@ export const isMockMode =
   import.meta.env.VITE_MOCK_MODE === "true" || urlMissing || keyMissing;
 
 export const supabase: SupabaseClient = createClient(
-  supabaseUrl || "https://mock.napsed.dev",
+  supabaseUrl || "https://mock.napsed.com",
   supabasePublishableKey || "mock-publishable-key",
   {
     auth: {

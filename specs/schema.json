@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://napsed.dev/schema/spec-manifest-1.1.0.json",
+  "$id": "https://napsed.com/schema/spec-manifest-1.1.0.json",
   "title": "NapsedSpecManifest",
   "description": "Declarative contract for a Napsed spec package. Git layout is starter/, solution/, verification/; workspace.files is the hydrated Monaco payload.",
   "type": "object",

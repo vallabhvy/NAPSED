@@ -60,7 +60,7 @@ Open `http://localhost:5173`. The app is fully unlocked.
 ### Do I use the maintainer's GitHub OAuth?
 **No. You cannot and should not use the maintainer's GitHub OAuth credentials.**
 
-GitHub OAuth applications enforce strict `Homepage URL` and `Authorization Callback URL` constraints (e.g. `https://napsed.dev` or `https://<prod>.supabase.co/auth/v1/callback`). GitHub rejects requests from unauthorized domains or local ports using those credentials.
+GitHub OAuth applications enforce strict `Homepage URL` and `Authorization Callback URL` constraints (e.g. `https://napsed.com` or `https://<prod>.supabase.co/auth/v1/callback`). GitHub rejects requests from unauthorized domains or local ports using those credentials.
 
 - **In Mock Mode (Default):** GitHub OAuth is completely bypassed. You are automatically logged in as a mock senior user.
 - **If you are testing OAuth locally:** You can create your own free OAuth App under your personal GitHub account (**Settings → Developer Settings → OAuth Apps**) with callback `http://127.0.0.1:54321/auth/v1/callback` and plug it into your local Supabase instance.

@@ -6,7 +6,7 @@ Last audited against the `devproof-app` tree. This is the gap analysis for the h
 
 | Area | Status |
 | --- | --- |
-| Brand / TLD | `napsed.dev` in landing copy; some surfaces still say `napsed.com` or DevProof |
+| Brand / TLD | `napsed.com` — official production host and proof card domain |
 | Vite + React 19 studio | Works. Monaco + in-memory workspace + Blob JS worker |
 | Spec types | `src/types/specs.ts` — now schema 1.1.0 |
 | Spec git layout | `specs/practice`, `specs/challenges` (were empty; packages added) |
