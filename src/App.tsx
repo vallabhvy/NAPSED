@@ -27,10 +27,23 @@ import { SettingsView } from "./components/features/SettingsView";
 import { SpecWriterView } from "./components/features/SpecWriterView";
 import { RecruiterPortalView } from "./components/features/RecruiterPortalView";
 import { SimulationStudioView } from "./components/features/SimulationStudioView";
+import { PublicProofView } from "./components/features/PublicProofView";
 import { ProtocolBackground } from "./components/ui/ProtocolBackground";
 import type { SimulationSpec } from "./types";
 
-const PUBLIC_TABS = new Set(["landing", "auth"]);
+function parseInitialRoute(): { tab: string; proofHandle: string | null } {
+  if (typeof window === "undefined") {
+    return { tab: "landing", proofHandle: null };
+  }
+  const pathname = window.location.pathname;
+  const match = pathname.match(/^\/@([a-zA-Z0-9_\-\.]+)/);
+  if (match) {
+    return { tab: "proof", proofHandle: match[1] };
+  }
+  return { tab: "landing", proofHandle: null };
+}
+
+const PUBLIC_TABS = new Set(["landing", "auth", "proof"]);
 
 export function App() {
   const [user, setUser] = useState<UserProfile>(() => createDefaultUserProfile());
@@ -38,7 +51,10 @@ export function App() {
   // Session is null until Supabase confirms a real GitHub OAuth session
   const [session, setSession] = useState<Session | null>(null);
   const [isAuthChecked, setIsAuthChecked] = useState(isMockMode);
-  const [currentTab, setCurrentTab] = useState<string>("landing");
+  
+  const initialRoute = parseInitialRoute();
+  const [currentTab, setCurrentTab] = useState<string>(initialRoute.tab);
+  const [proofHandle, setProofHandle] = useState<string | null>(initialRoute.proofHandle);
   const appUnlocked = !!session || isMockMode;
 
   // Build a UserProfile from a Supabase session (shared by both auth handlers)
@@ -76,13 +92,32 @@ export function App() {
     setUser((prev) => ({ ...prev, ...profile } as UserProfile));
 
     setSession(supaSession);
-        setCurrentTab("feed");
+    if (currentTab !== "proof") {
+      setCurrentTab("feed");
+    }
 
     // Only sync to DB on first sign-in, not on page reloads or token refreshes
     if (shouldSyncToDb) {
       syncUserToDb({ ...createDefaultUserProfile(), ...profile } as UserProfile);
     }
   };
+
+  // Listen for browser popstate (back/forward button) to support direct @handle URLs
+  useEffect(() => {
+    const handlePopState = () => {
+      const route = parseInitialRoute();
+      if (route.tab === "proof" && route.proofHandle) {
+        setProofHandle(route.proofHandle);
+        setCurrentTab("proof");
+      } else {
+        setProofHandle(null);
+        setCurrentTab(session || isMockMode ? "feed" : "landing");
+      }
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, [session]);
 
   // Listen for Supabase GitHub OAuth Authentication state changes
   useEffect(() => {
@@ -114,7 +149,9 @@ export function App() {
       (event, supaSession) => {
         if (event === "SIGNED_OUT") {
           setSession(null);
-          setCurrentTab("landing");
+          if (currentTab !== "proof") {
+            setCurrentTab("landing");
+          }
           return;
         }
 
@@ -221,10 +258,31 @@ export function App() {
     setTimeout(() => setToastMessage(null), 3500);
   };
 
+  const navigateToProof = (handle: string) => {
+    const clean = handle.replace(/^@/, "");
+    if (typeof window !== "undefined") {
+      window.history.pushState(null, "", `/@${clean}`);
+    }
+    setProofHandle(clean);
+    setCurrentTab("proof");
+  };
+
+  const navigateToHome = () => {
+    if (typeof window !== "undefined" && window.location.pathname.startsWith("/@")) {
+      window.history.pushState(null, "", "/");
+    }
+    setProofHandle(null);
+    setCurrentTab(appUnlocked ? "feed" : "landing");
+  };
+
   const handleSelectTab = (nextTab: string) => {
     if (!appUnlocked && !PUBLIC_TABS.has(nextTab)) {
       setCurrentTab("auth");
       return;
+    }
+
+    if (nextTab !== "proof" && typeof window !== "undefined" && window.location.pathname.startsWith("/@")) {
+      window.history.pushState(null, "", "/");
     }
 
     setCurrentTab(nextTab);
@@ -336,8 +394,8 @@ export function App() {
     <div className="min-h-screen bg-charcoal-950 text-beige flex flex-col relative overflow-hidden">
       {/* Cashmere & Concrete — Neutral Protocol atmosphere */}
       <ProtocolBackground />
-      {/* Top Streamlined Navbar with 5 Dedicated Pillars (Visible only when authenticated and not on landing page) */}
-      {appUnlocked && currentTab !== "landing" && (
+      {/* Top Streamlined Navbar with 5 Dedicated Pillars (Visible only when authenticated and not on landing or proof page) */}
+      {appUnlocked && currentTab !== "landing" && currentTab !== "proof" && (
         <Navbar
           user={user}
           currentTab={currentTab}
@@ -377,15 +435,26 @@ export function App() {
           <div className="min-h-[85vh] flex items-center justify-center font-mono text-sm text-greige">
             Verifying secure session…
           </div>
-        ) : currentTab === "landing" && (
+        ) : currentTab === "landing" ? (
           <LandingView
             onStart={() => handleSelectTab(appUnlocked ? "feed" : "auth")}
-            onExplorePortfolio={() => handleSelectTab("portfolio")}
+            onExplorePortfolio={() => navigateToProof("alex_r")}
             isAuthenticated={appUnlocked}
           />
-        )}
-
-        {(!appUnlocked && currentTab !== "landing") || currentTab === "auth" ? (
+        ) : currentTab === "proof" ? (
+          <PublicProofView
+            handle={proofHandle || "alex_r"}
+            onNavigateHome={navigateToHome}
+            onEnterSandbox={() => {
+              if (appUnlocked) {
+                setCurrentTab("feed");
+              } else {
+                setCurrentTab("auth");
+              }
+            }}
+            isAuthenticated={appUnlocked}
+          />
+        ) : (!appUnlocked && !PUBLIC_TABS.has(currentTab)) || currentTab === "auth" ? (
           <AuthView />
         ) : (
           <>

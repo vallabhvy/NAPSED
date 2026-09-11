@@ -1,5 +1,6 @@
 import { isMockMode, supabase } from "../lib/supabase";
 import { loadLocalSpecs } from "./specCatalog";
+import { fetchGithubUserProfile } from "./github";
 import type {
   Spec,
   FeedItem,
@@ -203,6 +204,220 @@ export function createDefaultUserProfile(githubUsername = ""): UserProfile {
     dailyTargetMinutes: 30,
     guildBadges: [],
   };
+}
+
+/**
+ * Resolves a public user profile and their peer-verified proof credentials for public verification cards.
+ * Compliant with security standards: selects ONLY public attributes, never exposes email or credentials.
+ */
+export async function fetchPublicProfileByHandle(
+  rawHandle: string,
+): Promise<{ user: UserProfile; credentials: ProofCredential[] } | null> {
+  const cleanHandle = rawHandle.trim().replace(/^@/, "");
+  if (!cleanHandle || !/^[a-zA-Z0-9_\-\.]{1,40}$/.test(cleanHandle)) {
+    return null;
+  }
+
+  // 1. Exemplar Engineer Demo Profile for @alex_r
+  if (cleanHandle.toLowerCase() === "alex_r") {
+    const alexUser: UserProfile = {
+      id: "usr_alex_rivera",
+      githubId: "alex_r",
+      githubUsername: "alex_r",
+      username: "alex_r",
+      name: "Alex Rivera",
+      avatarUrl: "/alex_avatar.png",
+      role: "STAFF",
+      bio: "Senior Distributed Systems Engineer. Concurrency & consensus protocol implementer. Specializes in low-latency lockless queues and Raft log compaction.",
+      githubUrl: "https://github.com",
+      streakDays: 21,
+      karmaPoints: 1420,
+      acceptanceRate: 100,
+      submissionsAudited: 8,
+      focusGuilds: ["DISTRIBUTED_SYSTEMS", "BACKEND"],
+      dailyTargetMinutes: 45,
+      company: "Napsed Core Guild",
+      location: "Distributed",
+      publicReposCount: 24,
+      followersCount: 186,
+      guildBadges: [
+        {
+          id: "b1",
+          name: "Distributed Systems Guild",
+          slug: "DISTRIBUTED_SYSTEMS",
+          level: "STAFF",
+          verifiedAt: "2026-08-14T10:30:00Z",
+          auditedBy: "Consensus Guild",
+          iconName: "Shield",
+        },
+        {
+          id: "b2",
+          name: "2/2 Consensus Seal",
+          slug: "BACKEND",
+          level: "VERIFIED",
+          verifiedAt: "2026-08-01T14:15:00Z",
+          auditedBy: "Concurrency Guild",
+          iconName: "Check",
+        },
+      ],
+    };
+
+    const alexCredentials: ProofCredential[] = [
+      {
+        id: "cred_alex_1",
+        title: "Raft Consensus Log Compaction & WAL Integrity",
+        track: "DISTRIBUTED_SYSTEMS",
+        issuedAt: "2026-08-14T10:30:00Z",
+        guildAudits: "2/2",
+        sealHash: "napsed_seal_raft_compaction_2_7f8a91b2c4e5",
+        hasDefense: true,
+        executionVerified: true,
+      },
+      {
+        id: "cred_alex_2",
+        title: "Lock-Free Ring Buffer with CAS Multi-Producer",
+        track: "BACKEND",
+        issuedAt: "2026-08-01T14:15:00Z",
+        guildAudits: "2/2",
+        sealHash: "napsed_seal_ring_buffer_2_3a1b89cd4f02",
+        hasDefense: true,
+        executionVerified: true,
+      },
+      {
+        id: "cred_alex_3",
+        title: "Zero-Copy TCP Frame Parser & Backpressure Gate",
+        track: "SECURITY",
+        issuedAt: "2026-07-22T09:00:00Z",
+        guildAudits: "2/2",
+        sealHash: "napsed_seal_tcp_parser_2_8c2a91df3e01",
+        hasDefense: true,
+        executionVerified: true,
+      },
+    ];
+
+    return { user: alexUser, credentials: alexCredentials };
+  }
+
+  // 2. Query Supabase Postgres (User or users table) for registered candidate
+  let dbUser: any = null;
+  if (!isMockMode) {
+    try {
+      // Strictly query non-sensitive public columns (Zero PII, no email, no auth tokens)
+      const { data: prismaUser } = await supabase
+        .from("User")
+        .select(
+          "id, username, name, avatarUrl, role, bio, githubUrl, streakDays, karmaPoints, acceptanceRate, submissionsAudited, company, location, websiteUrl",
+        )
+        .ilike("username", cleanHandle)
+        .maybeSingle();
+
+      if (prismaUser) {
+        dbUser = {
+          id: prismaUser.id,
+          username: prismaUser.username,
+          githubUsername: prismaUser.username,
+          name: prismaUser.name,
+          avatarUrl: prismaUser.avatarUrl || "/alex_avatar.png",
+          role: prismaUser.role || "SENIOR",
+          bio: prismaUser.bio || "",
+          githubUrl:
+            prismaUser.githubUrl || `https://github.com/${prismaUser.username}`,
+          streakDays: prismaUser.streakDays ?? 0,
+          karmaPoints: prismaUser.karmaPoints ?? 0,
+          acceptanceRate: prismaUser.acceptanceRate ?? 100,
+          submissionsAudited: prismaUser.submissionsAudited ?? 0,
+          company: prismaUser.company,
+          location: prismaUser.location,
+          websiteUrl: prismaUser.websiteUrl,
+        };
+      } else {
+        const { data: legacyUser } = await supabase
+          .from("users")
+          .select(
+            "id, username, name, avatar_url, role, bio, github_url, streak_days, karma_points, acceptance_rate, submissions_audited",
+          )
+          .ilike("username", cleanHandle)
+          .maybeSingle();
+
+        if (legacyUser) {
+          dbUser = {
+            id: legacyUser.id,
+            username: legacyUser.username,
+            githubUsername: legacyUser.username,
+            name: legacyUser.name,
+            avatarUrl: legacyUser.avatar_url || "/alex_avatar.png",
+            role: legacyUser.role || "SENIOR",
+            bio: legacyUser.bio || "",
+            githubUrl:
+              legacyUser.github_url || `https://github.com/${legacyUser.username}`,
+            streakDays: legacyUser.streak_days ?? 0,
+            karmaPoints: legacyUser.karma_points ?? 0,
+            acceptanceRate: legacyUser.acceptance_rate ?? 100,
+            submissionsAudited: legacyUser.submissions_audited ?? 0,
+          };
+        }
+      }
+    } catch (err) {
+      console.warn("fetchPublicProfileByHandle DB lookup error:", err);
+    }
+  }
+
+  // 3. If registered user found in DB, fetch their sealed credentials and enrich with GitHub
+  if (dbUser) {
+    const [credentials, ghProfile] = await Promise.all([
+      fetchProofCredentials(dbUser.id),
+      fetchGithubUserProfile(cleanHandle),
+    ]);
+
+    const enrichedUser: UserProfile = {
+      ...createDefaultUserProfile(cleanHandle),
+      ...dbUser,
+      publicReposCount:
+        ghProfile?.publicReposCount ?? dbUser.publicReposCount ?? 0,
+      followersCount:
+        ghProfile?.followersCount ?? dbUser.followersCount ?? 0,
+      company: ghProfile?.company || dbUser.company,
+      location: ghProfile?.location || dbUser.location,
+      websiteUrl: ghProfile?.websiteUrl || dbUser.websiteUrl,
+      avatarUrl: ghProfile?.avatarUrl || dbUser.avatarUrl,
+    };
+
+    return { user: enrichedUser, credentials };
+  }
+
+  // 4. Fallback to GitHub REST API (allows any developer's handle to be resolved to an unearned proof plate)
+  const gh = await fetchGithubUserProfile(cleanHandle);
+  if (!gh) {
+    return null;
+  }
+
+  const publicUser: UserProfile = {
+    id: `gh_${cleanHandle}`,
+    githubId: cleanHandle,
+    githubUsername: cleanHandle,
+    username: cleanHandle,
+    name: gh.name || cleanHandle,
+    avatarUrl: gh.avatarUrl || "/alex_avatar.png",
+    role: "SENIOR",
+    bio:
+      gh.bio ||
+      "Public GitHub engineering profile. No peer-audited Napsed credentials issued yet.",
+    githubUrl: gh.githubUrl || `https://github.com/${cleanHandle}`,
+    streakDays: 0,
+    karmaPoints: 0,
+    acceptanceRate: 100,
+    submissionsAudited: 0,
+    focusGuilds: ["BACKEND", "DISTRIBUTED_SYSTEMS"],
+    dailyTargetMinutes: 30,
+    publicReposCount: gh.publicReposCount,
+    followersCount: gh.followersCount,
+    company: gh.company,
+    location: gh.location,
+    websiteUrl: gh.websiteUrl,
+    guildBadges: [],
+  };
+
+  return { user: publicUser, credentials: [] };
 }
 
 export async function getSpecs(): Promise<Spec[]> {

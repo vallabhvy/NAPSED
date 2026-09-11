@@ -10,9 +10,13 @@ interface PortfolioViewProps {
   user: UserProfile;
   onUpdateUser?: (updated: Partial<UserProfile>) => void;
   credentials?: ProofCredential[];
+  isPublicView?: boolean;
 }
 
-function storedHandle(user: UserProfile) {
+function storedHandle(user: UserProfile, isPublic?: boolean) {
+  if (isPublic) {
+    return user.githubUsername || user.username || "";
+  }
   return (
     localStorage.getItem("napsed_github_handle") ||
     localStorage.getItem("devproof_github_handle") ||
@@ -34,8 +38,9 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
   user,
   onUpdateUser,
   credentials: credentialsProp,
+  isPublicView = false,
 }) => {
-  const [handle, setHandle] = useState(() => storedHandle(user));
+  const [handle, setHandle] = useState(() => storedHandle(user, isPublicView));
   const [isSyncing, setIsSyncing] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
@@ -107,7 +112,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
   };
 
   useEffect(() => {
-    if (handle) void sync(handle);
+    if (!isPublicView && handle) void sync(handle);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -372,63 +377,65 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({
         </footer>
       </article>
 
-      <details className="mt-6 rounded-none chassis-plate">
-        <summary className="cursor-pointer px-4 py-3 text-xs font-bold uppercase tracking-wider text-theme-ink hover:bg-theme-base transition [&::-webkit-details-marker]:hidden">
-          MANAGE IDENTITY (OWNER)
-        </summary>
-        <form
-          onSubmit={(event) => {
-            event.preventDefault();
-            void sync(handle);
-          }}
-          className="border-t recessed-meter px-4 py-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between"
-        >
-          <div className="flex-1">
-            <label htmlFor={syncInputId} className="block text-xs font-bold uppercase tracking-wider text-theme-ink">
-              SYNC GITHUB IDENTITY
-            </label>
-            <p className="mt-1 text-micro uppercase tracking-wider text-theme-ink/60">
-              PULLS PUBLIC PROFILE FIELDS INTO THIS PROOF CARD. DOES NOT ISSUE CREDENTIALS.
-            </p>
-            <div className="relative mt-3 max-w-xs">
-              <Search
-                className="pointer-events-none absolute left-2.5 top-2.5 h-3.5 w-3.5 text-theme-ink"
+      {!isPublicView && (
+        <details className="mt-6 rounded-none chassis-plate">
+          <summary className="cursor-pointer px-4 py-3 text-xs font-bold uppercase tracking-wider text-theme-ink hover:bg-theme-base transition [&::-webkit-details-marker]:hidden">
+            MANAGE IDENTITY (OWNER)
+          </summary>
+          <form
+            onSubmit={(event) => {
+              event.preventDefault();
+              void sync(handle);
+            }}
+            className="border-t recessed-meter px-4 py-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between"
+          >
+            <div className="flex-1">
+              <label htmlFor={syncInputId} className="block text-xs font-bold uppercase tracking-wider text-theme-ink">
+                SYNC GITHUB IDENTITY
+              </label>
+              <p className="mt-1 text-micro uppercase tracking-wider text-theme-ink/60">
+                PULLS PUBLIC PROFILE FIELDS INTO THIS PROOF CARD. DOES NOT ISSUE CREDENTIALS.
+              </p>
+              <div className="relative mt-3 max-w-xs">
+                <Search
+                  className="pointer-events-none absolute left-2.5 top-2.5 h-3.5 w-3.5 text-theme-ink"
+                  aria-hidden
+                />
+                <input
+                  id={syncInputId}
+                  value={handle}
+                  onChange={(event) => setHandle(event.target.value)}
+                  placeholder="GITHUB HANDLE"
+                  autoComplete="username"
+                  aria-describedby={message ? syncStatusId : undefined}
+                  className="h-9 w-full rounded-none chassis-plate py-1.5 pl-8 pr-3 text-xs font-mono uppercase tracking-wider text-theme-ink outline-none focus:bg-theme-base"
+                />
+              </div>
+            </div>
+            <button
+              type="submit"
+              disabled={isSyncing}
+  className="inline-flex min-h-9 items-center justify-center gap-1.5 rounded-none tactile-btn-primary px-4 text-xs font-bold uppercase tracking-wider text-theme-base disabled:opacity-50 "
+            >
+              <RefreshCw
+                className={`h-3.5 w-3.5 ${isSyncing ? "animate-spin" : ""}`}
                 aria-hidden
               />
-              <input
-                id={syncInputId}
-                value={handle}
-                onChange={(event) => setHandle(event.target.value)}
-                placeholder="GITHUB HANDLE"
-                autoComplete="username"
-                aria-describedby={message ? syncStatusId : undefined}
-                className="h-9 w-full rounded-none chassis-plate py-1.5 pl-8 pr-3 text-xs font-mono uppercase tracking-wider text-theme-ink outline-none focus:bg-theme-base"
-              />
-            </div>
-          </div>
-          <button
-            type="submit"
-            disabled={isSyncing}
-className="inline-flex min-h-9 items-center justify-center gap-1.5 rounded-none tactile-btn-primary px-4 text-xs font-bold uppercase tracking-wider text-theme-base disabled:opacity-50 "
-          >
-            <RefreshCw
-              className={`h-3.5 w-3.5 ${isSyncing ? "animate-spin" : ""}`}
-              aria-hidden
-            />
-            {isSyncing ? "SYNCING…" : "SYNC"}
-          </button>
-        </form>
-        {message && (
-          <p
-            id={syncStatusId}
-            role="status"
-            aria-live="polite"
-            className="border-t chassis-plate px-4 py-3 font-mono tabular-nums text-nano font-bold uppercase tracking-wider text-theme-ink"
-          >
-            {message}
-          </p>
-        )}
-      </details>
+              {isSyncing ? "SYNCING…" : "SYNC"}
+            </button>
+          </form>
+          {message && (
+            <p
+              id={syncStatusId}
+              role="status"
+              aria-live="polite"
+              className="border-t chassis-plate px-4 py-3 font-mono tabular-nums text-nano font-bold uppercase tracking-wider text-theme-ink"
+            >
+              {message}
+            </p>
+          )}
+        </details>
+      )}
     </motion.div>
   );
 };

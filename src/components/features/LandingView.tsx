@@ -287,7 +287,21 @@ export const LandingView: React.FC<LandingViewProps> = ({
                   <span className="mr-3 inline-block w-3 text-theme-ink/40">
                     {log.prompt}
                   </span>
-                  {log.text}
+                  {log.text.includes("napsed.com/@alex_r") ? (
+                    <span>
+                      immutable proof card issued:{" "}
+                      <button
+                        type="button"
+                        onClick={onExplorePortfolio}
+                        className="underline hover:text-emerald-500 transition font-bold"
+                        title="View Public Proof Card for @alex_r"
+                      >
+                        napsed.com/@alex_r
+                      </button>
+                    </span>
+                  ) : (
+                    log.text
+                  )}
                 </p>
               ))}
             </div>
