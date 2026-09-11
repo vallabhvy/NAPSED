@@ -344,14 +344,19 @@ async function executePython(nodes: any[], entryNode: any): Promise<ExecutionRes
   const pyCode = entryNode.content || '';
   const lines = pyCode.split('\n');
 
-  lines.forEach((line) => {
+  lines.forEach((line: string) => {
     if (line.includes('print(')) {
       const match = line.match(/print\((.*)\)/);
       if (match) {
-        try {
-          stdoutBuffer.push(eval(match[1]));
-        } catch {
-          stdoutBuffer.push(match[1].replace(/['"]/g, ''));
+        const raw = match[1].trim();
+        // Safe string parsing without main-thread eval
+        if (
+          (raw.startsWith('"') && raw.endsWith('"')) ||
+          (raw.startsWith("'") && raw.endsWith("'"))
+        ) {
+          stdoutBuffer.push(raw.slice(1, -1));
+        } else {
+          stdoutBuffer.push(raw);
         }
       }
     }

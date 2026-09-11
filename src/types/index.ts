@@ -82,6 +82,7 @@ export interface Spec {
   difficulty: string;
   manifest: SpecManifest;
   createdAt: string;
+  timeEstimateMinutes?: number;
 }
 
 export interface Submission {

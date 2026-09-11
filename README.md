@@ -116,6 +116,17 @@ pnpm sync:specs           # upsert hydrated manifests into Postgres (needs DATAB
 
 ---
 
+## Contributing
+
+We welcome contributions of all sizes! Napsed is architected for zero-friction open-source development:
+- **Zero Cloud Credentials:** No Supabase, database, or OAuth setup required — default Mock Mode boots in 5 seconds.
+- **Spec Authoring:** Create new failure-mode challenge packages in `specs/practice/` or `specs/challenges/`.
+- **Industrial Design:** Polish the Braun / Cashmere & Concrete test equipment UI.
+
+See [`CONTRIBUTING.md`](./CONTRIBUTING.md) for the step-by-step contributor guide, architecture FAQs, and quality gates.
+
+---
+
 ## License
 
 Apache-2.0 for the open core (`specs/`, `runner-wasm/`, UI). Proof signing, Judge0 dispatch, and rate-limit brokers stay proprietary.

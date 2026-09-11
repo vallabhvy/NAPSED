@@ -250,8 +250,8 @@ export function App() {
     submitChallengeSolution({
       challengeId: selectedChallenge.id,
       authorId: user.id,
-      code: submission.code || "",
-      defenseAnswers: submission.defenseAnswers || {}
+      codeFiles: (submission.codeFiles as Record<string, string>) || {},
+      defenseAnswer: submission.defenseAnswer || "",
     });
 
     const todayStr = new Date().toISOString().split('T')[0];
