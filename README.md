@@ -4,7 +4,7 @@ LeetCode measures whether you memorized Kadane. Napsed measures whether you have
 
 This is an assessment engine for senior systems engineers. Specs are real failure modes: token-bucket races, thread starvation, connection-pool exhaustion, brownfield refactors. Passing unit tests is not enough. You still have to defend the diff.
 
-**Public site:** [napsed.dev](https://napsed.dev) · Proof cards: `napsed.dev/@handle`
+**Public site:** [napsed.dev](https://napsed.com) · Proof cards: `napsed.com/@handle`
 
 ---
 
