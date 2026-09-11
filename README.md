@@ -71,7 +71,7 @@ Verification is a triad, not a green checkbox:
 1. **Deterministic tests** — hidden harness, exit `0`.
 2. **Systems telemetry** — race detector clean, CPU/memory/P99 inside `manifest.json`.
 3. **Defense gate** — “What did you do, and why did you do that?” Keywords must match the diff. Empty and boilerplate text fail.
-4. **Proof card** — SHA-256 of spec + identity + diff + test JSON + defense, published at `napsed.dev/@handle`.
+4. **Proof card** — SHA-256 of spec + identity + diff + test JSON + defense, published at `napsed.com/@handle`.
 
 ---
 

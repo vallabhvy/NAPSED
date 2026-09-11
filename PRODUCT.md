@@ -12,7 +12,7 @@ web
 
 **Secondary creators:** Senior/Staff engineers who publish interactive, runnable multi-file system specs.
 
-**Downstream audience:** Technical hiring managers who evaluate publicly verifiable Proof Card links (`napsed.dev/@handle`).
+**Downstream audience:** Technical hiring managers who evaluate publicly verifiable Proof Card links (`napsed.com/@handle`).
 
 ## Product Purpose
 
@@ -36,7 +36,7 @@ Napsed replaces static resumes and copy-pasted tutorial repos with an in-browser
 ## Capabilities and Constraints
 
 **In v1**
-- Public Proof Profiles (`napsed.dev/@handle`)
+- Public Proof Profiles (`napsed.com/@handle`)
 - In-browser multi-file IDE
 - Guild Spec Channels
 - Anti-AI Defense Gate + automated AI check + 2-member Guild audit before Proof Credentials issue
@@ -58,7 +58,7 @@ Napsed replaces static resumes and copy-pasted tutorial repos with an in-browser
 ## Brand Commitments
 
 - Canonical name: **Napsed** — brand, product, and UI copy must use this everywhere.
-- Public proof URLs use the `napsed.dev/@handle` pattern.
+- Public proof URLs use the `napsed.com/@handle` pattern.
 - Voice and visual world are owned by future DESIGN.md / incumbent UI; init records name authority only.
 
 ## Evidence on Hand
